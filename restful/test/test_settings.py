@@ -4,6 +4,6 @@ from usdarest.settings import *
 
 TEST_RUNNER = 'restful.test.runner.UnManagedModelTestRunner'
 
-FIXTURE_DIRS = ('restful/test_fixtures',)
+FIXTURE_DIRS = ('restful/test/fixtures',)
 
 MIGRATION_MODULES = {'restful': 'migrations_not_used_in_tests'}

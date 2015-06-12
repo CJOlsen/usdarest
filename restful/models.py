@@ -3,18 +3,25 @@ from django.db import models
 # a subset of the USDA Food and Nutrition Database tables
 #
 #
-# table names are of the form usda_*table name* because in the main project
-# being migrated into this one the database has 3 name prefixes designating
-# origin/ownership of the tables:
+# naming conventions of database tables:
 # usda_*: read-only tables containing official USDA data
 # foodapp_*: read-write tables of custom data, user profiles, etc.
 # django_*: auth system, etc. managed solely by django
 
 
 class FoodGroup(models.Model):
-    """ Food group model class, corresponds to the USDA's FD_GROUP table.
+    """
+    Food groups used in SR27 and their descriptions.
 
     25 records from the USDA FD_GROUP table.
+    See sr27_doc.pdf page 31 for details.
+
+    (names in parenthesis are USDA names when significantly different)
+    food_group_id (FdGrp_Cd): 4-digit code identifying a food group. Only the
+                              first 2 digits are currently assigned. In the
+                              future, the last 2 digits may be used. Codes may
+                              not be consecutive.
+    food_group_desc (FdGrp_Desc): Name of food group.
     """
     food_group_id = models.CharField(primary_key=True, max_length=4)
     food_group_desc = models.CharField(max_length=60)
@@ -28,12 +35,25 @@ class FoodGroup(models.Model):
 
 
 class FoodDesc(models.Model):
-    """ Food description, includes name(s), whether food was in FNDDS survey,
+    """
+    Food description, includes name(s), whether food was in FNDDS survey,
     and protein/fat/carbohydrate calorie calculation factors.
 
     8,618 records from the USDA's FOOD_DES table.
     See sr27_doc.pdf page 29 for details.
 
+    (names in parenthesis are USDA names when significantly different)
+    food_id (NDB_No): 5-digit Nutrient Databank number that uniquely
+                      identifies a food item. If this field is defined as
+                      numeric, the leading zero will be lost.
+    food_group (FdGrp_Cd): 4-digit code indicating food group to which a food
+                           item belongs.
+    long_desc: 200-character description of food item.
+    shrt_desc: 60-character abbreviated description of food item.
+               Generated from the 200-character description using
+               abbreviations in Appendix A. If short description is
+               longer than 60 characters, additional abbreviations
+               are made.
     common_name: i.e. "soda" or "pop" for "carbonated beverage"
     survey: used in the USDA Food and Nutrient Database for Dietary Studies
             (FNDDS)?  If so it has a complete nutrient profile for the 65 FNDDS
@@ -74,24 +94,26 @@ class FoodDesc(models.Model):
 
     class Meta:
         db_table = 'usda_food_desc'
-        verbose_name = 'Food description'
         managed = False
+        verbose_name = 'Food description'
 
 
 class Weight(models.Model):
-    """ Weight in grams of common measures for each food item.
+    """
+    Weight in grams of common measures for each food item.
 
     15,228 records from the USDA WEIGHT table.
-
-    No new data.  Corresponds to the USDA's FD_GROUP table.
     See sr27_doc page 36 for more info.
-    food: food_id from FoodDesc
-    seq: Labels multiple measures for each food.
-    amount: 1 as in "1 cup"
-    measure_desc: cup as in "1 cup"
-    grams: Number of grams per amount of measure.
-    num_data_points: number of data points
-    std_dev: standard deviation
+
+    (names in parenthesis are USDA names when significantly different)
+    food (NDB_No): 5-digit Nutrient Databank number.
+    seq: Sequence number. (Labels multiple measures for each food.)
+    amount: Unit modifier (for example, 1 in “1 cup”).
+    measure_desc (Msre_Desc): A 84 N Description (for example, cup, diced,
+                              and 1-inch pieces).
+    grams (Gm_Wgt): Gram weight.
+    num_data_pts: Number of data points.
+    std_dev: Standard deviation.
     """
 
     food = models.ForeignKey(FoodDesc, related_name='weight')
@@ -120,44 +142,45 @@ class NutrientData(models.Model):
     Nutritional information for a food, per 100 grams.
 
     654,572 records from the USDA NUT_DATA table.
-    See sr27_doc page 31 for more info.
+    See sr27_doc page 32 for more info.
 
-    (names have been slightly modified)
-    food_id (NDB_No): 5-digit Nutrient Databank number.
+    (names in parenthesis are USDA names when significantly different)
+    food (NDB_No): 5-digit Nutrient Databank number.
     nutr_id (Nutr_No): Unique 3-digit identifier code for a nutrient.
-    Nutr_Val: Amount in 100 grams, edible portion †.
-    Num_Data_Pts: Number of data points (previously called Sample_Ct)
+    nutr_value (Nutr_Val): Amount in 100 grams, edible portion †.
+    num_data_pts: Number of data points (previously called Sample_Ct)
                   is the number of analyses used to calculate the
                   nutrient value. If the number of data points is 0, the
                   value was calculated or imputed.
-    Std_Error: Standard error of the mean. Null if cannot be
+    std_error: Standard error of the mean. Null if cannot be
                calculated. The standard error is also not given if the
                number of data points is less than three.
-    Src_Cd: Code indicating type of data.
-    Deriv_Cd: Data Derivation Code giving specific information on
-              how the value is determined. This field is populated
-              only for items added or updated starting with SR14.
-    Ref_NDB_No: NDB number of the item used to calculate a missing
-                value. Populated only for items added or updated
-                starting with SR14.
-    Add_Nutr_Mark: Indicates a vitamin or mineral added for fortification
-                   or enrichment. This field is populated for ready-to-
-                   eat breakfast cereals and many brand-name hot
-                   cereals in food group 8.
-    Num_Studies: Number of studies.
-    Min: Minimum value.
-    Max: Maximum value.
-    DF: Degrees of freedom.
-    Low_EB: Lower 95% error bound.
-    Up_EB: Upper 95% error bound.
-    Stat_cmt: Statistical comments. See definitions below.
-    AddMod_Date: Indicates when a value was either added to the
-                 database or last modified.
-    CC: Confidence Code indicating data quality, based on
-        evaluation of sample plan, sample handling,
-        analytical method, analytical quality control, and
-        number of samples analyzed. Not included in this
-        release, but is planned for future releases.
+    source_code (Src_Cd): Code indicating type of data.
+    derivation_code (Deriv_Cd): Data Derivation Code giving specific
+                                information on how the value is determined.
+                                This field is populated only for items added or
+                                updated starting with SR14.
+    ref_food_id (Ref_NDB_No): NDB number of the item used to calculate a missing
+                              value. Populated only for items added or updated
+                              starting with SR14.
+    fortified (Add_Nutr_Mark): Indicates a vitamin or mineral added for
+                               fortification or enrichment. This field is
+                               populated for ready-to-eat breakfast cereals
+                               and many brand-name hot cereals in food group 8.
+    number_studies (Num_Studies): Number of studies.
+    min_value (Min): Minimum value.
+    max_value (Max): Maximum value.
+    degrees_freedom (DF): Degrees of freedom.
+    low_error_bound (Low_EB): Lower 95% error bound.
+    upper_error_bound (Up_EB): Upper 95% error bound.
+    statistical_cmt (Stat_cmt): Statistical comments. See definitions below.
+    addmod_data (AddMod_Date): Indicates when a value was either added to the
+                               database or last modified.
+    confidence_code (CC): Confidence Code indicating data quality, based on
+                          evaluation of sample plan, sample handling,
+                          analytical method, analytical quality control, and
+                          number of samples analyzed. Not included in this
+                          release, but is planned for future releases.
     """
 
     food = models.ForeignKey('FoodDesc', db_column='food_id',
@@ -205,17 +228,18 @@ class NutrientDef(models.Model):
     150 records from the USDA NUTR_DEF table.
     See sr27doc page 34 for more info.
 
-    Nutr_No: Unique 3-digit identifier code for a nutrient.
-    Units: Units of measure (mg, g, μg, and so on).
-    Tagname: International Network of Food Data Systems
+    (names in parenthesis are USDA names when significantly different)
+    nutr_id (Nutr_No): Unique 3-digit identifier code for a nutrient.
+    units: Units of measure (mg, g, μg, and so on).
+    tagname: International Network of Food Data Systems
              (INFOODS) Tagnames.† A unique abbreviation for a
              nutrient/food component developed by INFOODS to
              aid in the interchange of data.
-    NutrDesc: Name of nutrient/food component.
-    Num_Dec: Number of decimal places to which a nutrient value is
-             rounded.
-    SR_Order: Used to sort nutrient records in the same order as
-              various reports produced from SR
+    nutr_desc (NutrDesc): Name of nutrient/food component.
+    decimal_places (Num_Dec): Number of decimal places to which a nutrient
+                              value is rounded.
+    sr_order (SR_Order): Used to sort nutrient records in the same order as
+                         various reports produced from SR
     """
     nutr_id = models.CharField(primary_key=True, max_length=3, db_column='nutr_id')
     units = models.CharField(max_length=7)

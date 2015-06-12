@@ -89,7 +89,3 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
-
-# custom test runner to change unmanaged models to managed for
-# the duration of testing
-# TEST_RUNNER = 'restful.test.runner.UnManagedModelTestRunner'

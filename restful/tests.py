@@ -9,7 +9,7 @@ class AssertStatusCodesMixin(object):
         """
         Runs 7 status code checks corresponding to the supplied dictionary.
 
-        url: already reversed, not raw
+        url: String, i.e. "/foods/01001"
         status_dict: a dictionary with 'get', 'post', 'put', 'patch', 'delete',
                      'head', and 'options' keys corresponding to their desired
                      status codes.
