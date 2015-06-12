@@ -90,3 +90,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# custom test runner to change unmanaged models to managed for
+# the duration of testing
+# TEST_RUNNER = 'restful.test.runner.UnManagedModelTestRunner'

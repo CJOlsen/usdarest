@@ -1,5 +1,8 @@
 from django.shortcuts import get_object_or_404
 
+# used in views.py for urls with multiple named regex patterns
+#   i.e. /foods/<food_id>/seqs/<seq_id>/nutrients/<nutr_id>
+
 # taken verbatim from http://www.django-rest-framework.org/api-guide/generic-views/#creating-custom-mixins
 class MultipleFieldLookupMixin(object):
     """

@@ -1,7 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import User
-from django.db import connection
-from collections import OrderedDict
+
+# a subset of the USDA Food and Nutrition Database tables
+#
+#
+# table names are of the form usda_*table name* because in the main project
+# being migrated into this one the database has 3 name prefixes designating
+# origin/ownership of the tables:
+# usda_*: read-only tables containing official USDA data
+# foodapp_*: read-write tables of custom data, user profiles, etc.
+# django_*: auth system, etc. managed solely by django
 
 
 class FoodGroup(models.Model):
@@ -13,11 +20,11 @@ class FoodGroup(models.Model):
     food_group_desc = models.CharField(max_length=60)
 
     def __str__(self):
-        return self.food_group_desc.strip()  # are the names all 60 chars long in the db?
+        return self.food_group_desc.strip()
 
     class Meta:
-        managed = False
         db_table = 'usda_food_group'
+        managed = False
 
 
 class FoodDesc(models.Model):
@@ -42,15 +49,14 @@ class FoodDesc(models.Model):
     """
 
     food_id = models.CharField(primary_key=True, max_length=5, db_column='food_id')
-    #  food_group_id = models.CharField(max_length=4)
-    food_group_id = models.ForeignKey(FoodGroup, db_column='food_group_id',
-                                      related_name='food_desc')
-    long_desc = models.CharField(max_length=200)
-    short_desc = models.CharField(max_length=200)
+    food_group = models.ForeignKey(FoodGroup, db_column='food_group_id')
+    long_desc = models.CharField(max_length=200, verbose_name="long description")
+    short_desc = models.CharField(max_length=200, verbose_name="short description")
     common_name = models.CharField(max_length=100, blank=True)
     manufacture_name = models.CharField(max_length=65, blank=True)
     survey = models.CharField(max_length=1, blank=True)
-    refuse_desc = models.CharField(max_length=135, blank=True)
+    refuse_desc = models.CharField(max_length=135, blank=True,
+                                   verbose_name="refuse description")
     refuse = models.DecimalField(max_digits=2, decimal_places=0,
                                  blank=True, null=True)
     scientific_name = models.CharField(max_length=65, blank=True)
@@ -67,11 +73,9 @@ class FoodDesc(models.Model):
         return self.short_desc
 
     class Meta:
-        managed = False
         db_table = 'usda_food_desc'
         verbose_name = 'Food description'
-
-
+        managed = False
 
 
 class Weight(models.Model):
@@ -91,21 +95,23 @@ class Weight(models.Model):
     """
 
     food = models.ForeignKey(FoodDesc, related_name='weight')
-    seq = models.CharField(max_length=2)
+    seq = models.CharField(max_length=1)
     amount = models.DecimalField(max_digits=5, decimal_places=3)
-    measure_desc = models.CharField(max_length=84)
+    measure_desc = models.CharField(max_length=84, verbose_name="measure description")
     grams = models.DecimalField(max_digits=7, decimal_places=1)
     num_data_pts = models.DecimalField(max_digits=4, decimal_places=0,
-                                       blank=True, null=True)
+                                       blank=True, null=True,
+                                       verbose_name="number data points")
     std_dev = models.DecimalField(max_digits=7, decimal_places=3,
-                                  blank=True, null=True)
+                                  blank=True, null=True,
+                                  verbose_name="standard deviation")
 
     def __str__(self):
         return str(float(self.amount)) + " " + str(self.measure_desc)
 
     class Meta:
-        managed = False
         db_table = 'usda_weight'
+        managed = False
         unique_together = ('food', 'seq')
 
 
@@ -154,19 +160,21 @@ class NutrientData(models.Model):
         release, but is planned for future releases.
     """
 
-    food_id = models.ForeignKey('FoodDesc', db_column='food_id',
-                                related_name='nutrient_data',
-                                verbose_name='Food Name')
-    nutr_id = models.ForeignKey('NutrientDef', db_column='nutr_id',
-                                verbose_name='nutrient_data')
+    food = models.ForeignKey('FoodDesc', db_column='food_id',
+                             related_name='nutrient_data',
+                             verbose_name='Food Name')
+    nutrient = models.ForeignKey('NutrientDef', db_column='nutr_id')
     nutr_value = models.DecimalField(max_digits=10, decimal_places=3,
-                                     verbose_name='Value')
-    num_data_pts = models.DecimalField(max_digits=5, decimal_places=0)
+                                     verbose_name='value')
+    num_data_pts = models.DecimalField(max_digits=5, decimal_places=0,
+                                       verbose_name="number data points")
     std_error = models.DecimalField(max_digits=8, decimal_places=3,
-                                    blank=True, null=True)
+                                    blank=True, null=True,
+                                    verbose_name="standard error")
     source_code = models.CharField(max_length=2)
     derivation_code = models.CharField(max_length=4, blank=True)
-    ref_food_id = models.CharField(max_length=5, blank=True)
+    ref_food_id = models.CharField(max_length=5, blank=True,
+                                   verbose_name="reference food id")
     fortified = models.CharField(max_length=1, blank=True)
     number_studies = models.DecimalField(max_digits=2, decimal_places=0,
                                          blank=True, null=True)
@@ -180,13 +188,14 @@ class NutrientData(models.Model):
                                           blank=True, null=True)
     upper_error_bound = models.DecimalField(max_digits=10, decimal_places=3,
                                             blank=True, null=True)
-    statistical_cmt = models.CharField(max_length=10, blank=True)
-    addmod_date = models.CharField(max_length=10, blank=True)
-    confidence_code = models.CharField(max_length=1, blank=True)
+    statistical_cmt = models.CharField(max_length=10, blank=True,
+                                       verbose_name="statistical comment")
+    addmod_date = models.CharField(max_length=10, blank=True, null=True)
+    confidence_code = models.CharField(max_length=1, blank=True, null=True)
 
     class Meta:
-        managed = False
         db_table = 'usda_nutrient_data'
+        managed = False
 
 
 class NutrientDef(models.Model):
@@ -211,7 +220,7 @@ class NutrientDef(models.Model):
     nutr_id = models.CharField(primary_key=True, max_length=3, db_column='nutr_id')
     units = models.CharField(max_length=7)
     tagname = models.CharField(max_length=20, blank=True)
-    nutr_desc = models.CharField(max_length=60)
+    nutr_desc = models.CharField(max_length=60, verbose_name="nutrient description")
     decimal_places = models.CharField(max_length=1)
     sr_order = models.DecimalField(max_digits=6, decimal_places=0)
 
@@ -219,6 +228,6 @@ class NutrientDef(models.Model):
         return self.nutr_desc
 
     class Meta:
-        managed = False
         db_table = 'usda_nutrient_def'
+        managed = False
         verbose_name = 'Nutrient definition'

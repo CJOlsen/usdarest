@@ -138,7 +138,5 @@ class FoodGroupDetail(generics.RetrieveAPIView):
     queryset = FoodGroup.objects.all()
     def get_queryset(self):
         queryset = super(FoodGroupDetail, self).get_queryset()
-        return queryset.filter(food_group_id=self.kwargs.get('food_group_id'))
-
-
+        return queryset.filter(food_group=self.kwargs.get('food_group_id'))
 
