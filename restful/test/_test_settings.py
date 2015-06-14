@@ -1,6 +1,7 @@
 from usdarest.settings import *
 
-# to use this file: python manage.py test --settings=restful.test.test_settings -v 2
+# to use this file:
+#   python manage.py test restful/test --settings=restful.test._test_settings -v 2
 
 TEST_RUNNER = 'restful.test.runner.UnManagedModelTestRunner'
 

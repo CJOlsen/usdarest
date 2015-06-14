@@ -1,5 +1,5 @@
 from django.core.urlresolvers import reverse
-from rest_framework.test import APITestCase, APIRequestFactory
+from rest_framework.test import APITestCase
 from decimal import Decimal
 
 
@@ -30,10 +30,7 @@ class AssertStatusCodesMixin(object):
 
 
 class FoodTest(APITestCase, AssertStatusCodesMixin):
-    def setUp(self):
-        self.factory = APIRequestFactory()
-
-    def test_food_list(self):
+    def test_endpoint_food_list(self):
         url = reverse("food:food-list", kwargs={})
 
         # test response status codes
@@ -46,7 +43,7 @@ class FoodTest(APITestCase, AssertStatusCodesMixin):
         _keys = {"food_id": 0, "long_desc": 0, "short_desc": 0}.keys()
         self.assertEqual(response.data["results"][0].keys(), _keys)
 
-    def test_food_detail(self):
+    def test_endpoint_food_detail(self):
         url = reverse("food:food-detail", kwargs={'food_id': '01001'})
 
         # test response status codes
@@ -72,7 +69,7 @@ class FoodTest(APITestCase, AssertStatusCodesMixin):
 
 
 class WeightTest(APITestCase, AssertStatusCodesMixin):
-    def test_weight_list(self):
+    def test_endpoint_weight_list(self):
         url = reverse("food:weight-list", kwargs={'food_id': '01001'})
 
         # test response status codes
@@ -83,7 +80,7 @@ class WeightTest(APITestCase, AssertStatusCodesMixin):
         self.assertEqual(response.data[0]["food"], "01001")
         # TODO: more data tests here
 
-    def test_weight_detail(self):
+    def test_endpoint_weight_detail(self):
         url = reverse("food:weight-detail", kwargs={'food_id': '01001',
                                                     'seq_id': '1'})
 
@@ -104,7 +101,7 @@ class WeightTest(APITestCase, AssertStatusCodesMixin):
 
 class NutrientTest(APITestCase, AssertStatusCodesMixin):
     # **in the food url namespace
-    def test_food_nutrient_list(self):
+    def test_endpoint_food_nutrient_list(self):
         url = reverse("food:nutrient-list", kwargs={'food_id': '01001', 'seq_id': '01'})
 
         # test response status codes
@@ -116,7 +113,7 @@ class NutrientTest(APITestCase, AssertStatusCodesMixin):
         _keys = {"nutr_id": 0, "nutr_desc": 0}.keys()
         self.assertEqual(response.data["results"][0].keys(), _keys)
 
-    def test_food_nutrient_detail(self):
+    def test_endpoint_food_nutrient_detail(self):
         url = reverse("food:nutrient-detail", kwargs={'food_id': '01001',
                                                       'seq_id': '1',
                                                       'nutr_id': '203'})
@@ -133,7 +130,7 @@ class NutrientTest(APITestCase, AssertStatusCodesMixin):
         self.assertEqual(response.data, data)
 
     # **in the nutrient url namespace
-    def test_nutrient_list(self):
+    def test_endpoint_nutrient_list(self):
         url = reverse("nutrient:nutrient-list", kwargs={})
 
         # test response status codes
@@ -145,7 +142,7 @@ class NutrientTest(APITestCase, AssertStatusCodesMixin):
         _keys = {"nutr_id": 0, "nutr_desc": 0}.keys()
         self.assertEqual(response.data["results"][0].keys(), _keys)
 
-    def test_nutrient_detail(self):
+    def test_endpoint_nutrient_detail(self):
         url = reverse("nutrient:nutrient-detail", kwargs={'nutr_id': '203'})
 
         # test response status codes

@@ -22,7 +22,7 @@ The API should be hosted and public shortly.
 
 Unit tests can be run from the command line using the command:
 
-    python manage.py test --settings=restful.test.test_settings -v 2
+    python manage.py test --settings=restful.test._test_settings -v 2
 
 For a full working local copy:
 
@@ -33,7 +33,7 @@ For a full working local copy:
 * install Django REST framework (http://www.django-rest-framework.org/tutorial/quickstart/)
 * update and rename usdarest/usdarest/local_settings_template.py
 * run init_db.sh from (and in) project's root directory
-* run tests: python manage.py test --settings=restful.test.test_settings -v 2
+* run tests: python manage.py test --settings=restful.test._test_settings -v 2
 * run server: python manage.py runserver
 
 

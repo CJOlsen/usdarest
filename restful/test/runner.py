@@ -5,7 +5,7 @@ from django.db import connections, DEFAULT_DB_ALIAS
 class UnManagedModelTestRunner(DiscoverRunner):
     """
     Test runner that automatically makes all unmanaged models managed for the
-     duration of the test run.  Also causes SQL to be printed.
+     duration of the test run.
     """
     def setup_test_environment(self, *args, **kwargs):
         print("\nsetup_test_environment\n")
@@ -18,10 +18,6 @@ class UnManagedModelTestRunner(DiscoverRunner):
                                  if not m._meta.managed]
         for m in self.unmanaged_models:
             m._meta.managed = True
-
-        # show SQL
-        connections[DEFAULT_DB_ALIAS].use_debug_cursor = True
-
 
     def teardown_test_environment(self, *args, **kwargs):
         print("\nteardown_test_environment\n")
