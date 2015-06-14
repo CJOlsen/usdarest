@@ -7,16 +7,18 @@ SECRET_KEY = 'y3m$=rs7$!91*31y*dt%m**ljam66otk4%ilm%d&b+y@lc7zvq'
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'usdafood',
-        'USER': 'cj',
-        'PASSWORD': 'headgreenbooktee',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-    }
-}
+DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'usdafood',
+#         'USER': 'cj',
+#         'PASSWORD': 'headgreenbooktee',
+#         'HOST': '127.0.0.1',
+#         'PORT': '5432',
+#     }
+# }
 
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
