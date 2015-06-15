@@ -15,8 +15,8 @@ import os
 from usdarest.production_settings import *
 
 
-ADMINS = (("me", "contact@cjolsen.com"),
-          )
+#ADMINS = (("me", "contact@cjolsen.com"),
+#          )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
