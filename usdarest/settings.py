@@ -15,6 +15,10 @@ import os
 from usdarest.production_settings import *
 
 
+ADMINS = [
+    "contact@cjolsen.com",
+    ]
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Quick-start development settings - unsuitable for production
@@ -24,8 +28,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['*']  # CHANGE THIS!!!
-
+ALLOWED_HOSTS = ['stormy-escarpment-1158.herokuapp.com']
 
 # Application definition
 
