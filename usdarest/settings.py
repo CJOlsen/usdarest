@@ -27,7 +27,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['stormy-escarpment-1158.herokuapp.com']
+ALLOWED_HOSTS = ['.stormy-escarpment-1158.herokuapp.com']
 
 # Application definition
 
