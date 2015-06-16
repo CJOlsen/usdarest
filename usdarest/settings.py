@@ -13,10 +13,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 from usdarest.production_settings import *
-
-
-#ADMINS = (("me", "contact@cjolsen.com"),
-#          )
+import dj_database_url
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -117,3 +114,6 @@ LOGGING = {
         }
     }
 }
+
+DATABASES = {'default': dj_database_url.config(default=os.environ['DATABASE_URL'])}
+DATABASES['default']['engine'] = 'django.db.backends.postgresql_psycopg2'
