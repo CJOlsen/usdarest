@@ -6,7 +6,7 @@ The data is owned by the USDA and available in several formats here: http://www.
 
 Currently includes a subset of the entire USDA dataset.  Provides endpoints for foods, nutrients and food groups.  After more thorough testing and finalization of project architecture the remaining data and endpoints will be included.
 
-The API should be hosted and public shortly.
+The API is currently available for browsing at foodapp.cjolsen.com (the API starts at /foods or /nutrients)
 
 
 ## Requirements
@@ -16,6 +16,7 @@ The API should be hosted and public shortly.
 * Python 3.4
 * Django REST framework v3.1.3
 * PostgreSQL
+* everything in requirements.txt
 * virtualenv and pip are recommended
 
 ## Usage
@@ -43,8 +44,10 @@ This project is a migration in progress from Django/jQuery to Django REST Framew
 
 Current URL patterns:
 
- * foods/\<food id\>/seqs/\<seq id\>/nutrients/\<nutrient id\>  (seq id's correspond to measures)
+ * foods/\<food id\>/seqs/\<seq id\>/nutrients/\<nutrient id\>
+ * ex: http://foodapp.cjolsen.com/foods/01001/seqs/1/nutrients/203
  * nutrients/\<nutrient id\>
+ * ex: http://foodapp.cjolsen.com/nutrients/203
 
 ## Copyright
 

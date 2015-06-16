@@ -1,3 +1,6 @@
+from django.http import HttpResponse
+from django.utils.html import escape
+
 from restful.models import FoodGroup, FoodDesc, Weight, NutrientDef
 from restful.serializers import FoodGroupSerializer, FoodDescBasicSerializer, \
     FoodDetailSerializer, FoodSeqListSerializer, FoodSeqSerializer, \
@@ -7,6 +10,17 @@ from restful.mixins import MultipleFieldLookupMixin
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
+
+
+
+def home_response(request):
+    return HttpResponse(("""
+    Server is up.<br><br>
+    Available url trees are:<br><br>
+    /foods/food_id/seqs/seq_id/nutrients/nutr_id<br>
+    example: <a href="/foods/01001/seqs/1/nutrients/203">/foods/01001/seqs/1/nutrients/203</a><br><br>
+    /nutrients/nutrient id<br>
+    example: <a href="/nutrients/203">/nutrients/203</a>"""))
 
 
 # these views comprise a read-only REST api of the foods, nutrients and food
