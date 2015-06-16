@@ -8,7 +8,7 @@ SECRET_KEY = 'y3m$=rs7$!91*31y*dt%m**ljam66otk4%ilm%d&b+y@lc7zvq'
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 import dj_database_url
-DATABASES = {'default': dj_database_url.config(default='postgres://localhost')}
+DATABASES = {'default': dj_database_url.config()}
 
 # DATABASES = {
 #     'default': {
