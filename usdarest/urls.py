@@ -10,6 +10,6 @@ def home_response():
     /nutrients/<nutrient id>""")
 
 urlpatterns = [
-    url(r'^$', home_response),
+    url(r'^$', home_response()),
     url(r'^', include('restful.urls')),
 ]
