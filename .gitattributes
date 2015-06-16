@@ -1,0 +1,3 @@
+production_settings merge=ours
+local_settings merge=ours
+
